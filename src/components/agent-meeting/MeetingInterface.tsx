@@ -381,8 +381,8 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   };
 
   return (
-    <RoomLayout agentSettings={agentSettings}>
-      <div className="flex flex-col items-center justify-between h-[50%]">
+    <RoomLayout agentSettings={agentSettings} className="bg-transparent">
+      <div className="flex flex-col items-center justify-between h-[50%] bg-transparent">
         {/* Microphone with Wave Animation */}
         <MicrophoneWithWaves
           isConnected={isJoined}

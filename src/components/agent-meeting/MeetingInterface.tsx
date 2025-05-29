@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import { RefreshCw } from "lucide-react";
@@ -29,7 +28,9 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const [agentIsSpeaking, setAgentIsSpeaking] = useState(false);
-  const [agentParticipantId, setAgentParticipantId] = useState<string | null>(null);
+  const [agentParticipantId, setAgentParticipantId] = useState<string | null>(
+    null
+  );
   const joinAttempted = useRef(false);
   const agentInviteAttempted = useRef(false);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -37,8 +38,8 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const maxRetries = 3;
   const retryDelay = 5000;
 
-  const { join, leave, end, toggleMic, participants, localParticipant } = useMeeting(
-    {
+  const { join, leave, end, toggleMic, participants, localParticipant } =
+    useMeeting({
       onMeetingJoined: () => {
         console.log("Meeting joined successfully");
         setIsJoined(true);
@@ -94,8 +95,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           setConnectionError(error.message || "Connection failed");
         }
       },
-    }
-  );
+    });
 
   // Use participant hook for agent if available
   const agentParticipant = useParticipant(agentParticipantId || "", {
@@ -117,10 +117,14 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const setupAudioAnalysis = (stream: MediaStream) => {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
+      const audioContext = new AudioContextClass();
       const analyser = audioContext.createAnalyser();
       const source = audioContext.createMediaStreamSource(stream);
-      
+
       analyser.fftSize = 256;
       analyser.smoothingTimeConstant = 0.8;
       source.connect(analyser);
@@ -131,9 +135,10 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
       const updateAudioLevel = () => {
         if (analyserRef.current) {
           analyserRef.current.getByteFrequencyData(dataArray);
-          const average = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+          const average =
+            dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
           const normalizedLevel = Math.min(average / 128, 1);
-          
+
           // Set speaking state based on audio level
           setAgentIsSpeaking(normalizedLevel > 0.1);
         }
@@ -233,23 +238,20 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const leaveAgent = async () => {
     try {
-      const response = await fetch(
-        `${VITE_API_URL}/leave-agent`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            meeting_id: meetingId,
-          }),
-        }
-      );
+      const response = await fetch(`${VITE_API_URL}/leave-agent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          meeting_id: meetingId,
+        }),
+      });
 
       if (response.ok) {
         const data = await response.json();
         console.log("Agent leave response:", data);
-        
+
         if (data.status === "removed") {
           console.log("Agent successfully removed, ending meeting");
           end(); // Call the end method from useMeeting hook
@@ -290,29 +292,27 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   const inviteAgent = async () => {
     try {
       console.log("Sending agent settings:", agentSettings);
-      
-      const systemPrompt = PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
-      
-      const response = await fetch(
-        `${VITE_API_URL}/join-agent`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            meeting_id: meetingId,
-            token: VITE_VIDEOSDK_TOKEN,
-            model: agentSettings.model,
-            voice: agentSettings.voice,
-            personality: agentSettings.personality,
-            system_prompt: systemPrompt,
-            temperature: agentSettings.temperature,
-            topP: agentSettings.topP,
-            topK: agentSettings.topK,
-          }),
-        }
-      );
+
+      const systemPrompt =
+        PROMPTS[agentSettings.personality as keyof typeof PROMPTS];
+
+      const response = await fetch(`${VITE_API_URL}/join-agent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          meeting_id: meetingId,
+          token: VITE_VIDEOSDK_TOKEN,
+          model: agentSettings.model,
+          voice: agentSettings.voice,
+          personality: agentSettings.personality,
+          system_prompt: systemPrompt,
+          temperature: agentSettings.temperature,
+          topP: agentSettings.topP,
+          topK: agentSettings.topK,
+        }),
+      });
 
       if (response.ok) {
         setAgentInvited(true);
@@ -345,6 +345,10 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           thickBorder={true}
           onClick={handleInviteAgent}
           disabled={!isJoined}
+          gradient={true}
+          borderColor="#864059"
+          borderWidth="6px"
+          borderRadius="6px"
         />
       );
     } else if (agentInvited && !agentJoined) {
@@ -353,6 +357,11 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         <CustomButton
           text="Give it a sec..."
           disabled={true}
+          gradient={true}
+          customGradient="linear-gradient(90deg, #864059 0%, #7D3478 49%, #483D85 100%)"
+          borderColor="#F96E8C"
+          borderWidth="1.5px"
+          borderRadius="1.5px"
         />
       );
     } else {
@@ -362,27 +371,27 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           text="Press to stop"
           thickBorder={true}
           onClick={handleDisconnect}
+          gradient={true}
+          borderColor="#864059"
+          borderWidth="6px"
+          borderRadius="6px"
         />
       );
     }
   };
 
   return (
-    <RoomLayout
-      agentSettings={agentSettings}
-    >
+    <RoomLayout agentSettings={agentSettings}>
       <div className="flex flex-col items-center justify-between h-[50%]">
         {/* Microphone with Wave Animation */}
-        <MicrophoneWithWaves 
+        <MicrophoneWithWaves
           isConnected={isJoined}
           isSpeaking={agentIsSpeaking}
-          className="mb-8"
+          className="mb-20"
         />
 
         {/* Main Button */}
-        <div className="mb-6">
-          {renderMainButton()}
-        </div>
+        <div className="mb-6">{renderMainButton()}</div>
 
         {/* Control Panel - Only show retry button if needed */}
         <div className="flex items-center space-x-6">

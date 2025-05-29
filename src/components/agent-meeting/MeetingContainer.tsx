@@ -1,4 +1,3 @@
-
 import React from "react";
 import { AgentSettings } from "./types";
 import { RoomLayout } from "../layout/RoomLayout";
@@ -19,19 +18,20 @@ export const MeetingContainer: React.FC<MeetingContainerProps> = ({
   return (
     <RoomLayout agentSettings={agentSettings}>
       {/* Microphone with Wave Animation */}
-      <MicrophoneWithWaves 
-        isConnected={false}
-        className="mb-12"
-      />
+      <MicrophoneWithWaves isConnected={false} className="mb-20" />
 
       {/* Control Panel */}
       <div className="flex items-center space-x-6">
         {/* Connect Button */}
         <CustomButton
-          text={isConnecting ? "Connecting..." : "Connect"}
+          text={isConnecting ? "Connecting..." : "Give it a try!"}
           thickBorder={true}
           onClick={onConnect}
           disabled={isConnecting}
+          gradient={true}
+          borderColor="#864059"
+          borderWidth="6px"
+          borderRadius="6px"
         />
       </div>
     </RoomLayout>

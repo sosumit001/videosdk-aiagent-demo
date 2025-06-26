@@ -304,13 +304,9 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         body: JSON.stringify({
           meeting_id: meetingId,
           token: VITE_VIDEOSDK_TOKEN,
-          model: agentSettings.model,
-          voice: agentSettings.voice,
-          personality: agentSettings.personality,
+          pipeline_type: "google",
+          personality: "Custom",
           system_prompt: systemPrompt,
-          temperature: agentSettings.temperature,
-          topP: agentSettings.topP,
-          topK: agentSettings.topK,
         }),
       });
 
@@ -381,7 +377,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
   };
 
   return (
-    <RoomLayout agentSettings={agentSettings} className="bg-transparent">
+    <RoomLayout agentSettings={agentSettings}>
       <div className="flex flex-col items-center justify-between h-[50%] bg-transparent">
         {/* Microphone with Wave Animation */}
         <MicrophoneWithWaves

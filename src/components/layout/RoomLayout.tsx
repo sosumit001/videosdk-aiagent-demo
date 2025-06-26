@@ -13,7 +13,7 @@ export const RoomLayout: React.FC<RoomLayoutProps> = ({
   onSettingsChange,
 }) => {
   return (
-    <div className="min-h-screen text-white flex flex-col">
+    <div className="min-h-screen text-white flex flex-col bg-transparent">
       {/* Simplified layout - just the main content */}
       <div className="flex-1 flex flex-col items-center justify-center p-8">
         {children}

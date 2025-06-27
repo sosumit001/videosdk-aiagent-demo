@@ -238,32 +238,55 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
 
   const leaveAgent = async () => {
     try {
-      const response = await fetch(`${VITE_API_URL}/leave-agent`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          meeting_id: meetingId,
-        }),
-      });
+      console.log("Attempting to remove agent using AI endpoint");
+
+      const requestBody = {
+        meeting_id: meetingId,
+      };
+
+      console.log("Leave agent request body:", requestBody);
+
+      const response = await fetch(
+        "https://aiendpoint.tryvideosdk.live/leave-agent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      console.log("Leave agent response status:", response.status);
+      console.log("Leave agent response ok:", response.ok);
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("Agent leave response:", data);
+        const responseData = await response.json();
+        console.log("Agent leave successful:", responseData);
 
-        if (data.status === "removed") {
+        if (responseData.status === "removed") {
           console.log("Agent successfully removed, ending meeting");
-          end(); // Call the end method from useMeeting hook
-        } else if (data.status === "not_found") {
-          console.log("No agent session found");
+          end();
+          console.error("Agent Removed");
+        } else if (responseData.status === "not_found") {
+          console.log("No agent session found, ending meeting anyway");
+          end();
+          console.error("No Agent Found");
         }
       } else {
-        const errorData = await response.json();
-        console.error("Error removing agent:", errorData);
+        const errorText = await response.text();
+        console.error("Leave agent failed:", response.status, errorText);
+
+        console.log("API failed, but ending meeting locally");
+        end();
+        console.error("Couldn't confirm agent removal");
       }
     } catch (error) {
       console.error("Error calling leave-agent API:", error);
+
+      console.log("Error occurred, but ending meeting locally");
+      end();
+      console.error("Can't remove agent but end meeting");
     }
   };
 

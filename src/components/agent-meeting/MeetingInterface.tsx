@@ -327,7 +327,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
         body: JSON.stringify({
           meeting_id: meetingId,
           token: VITE_VIDEOSDK_TOKEN,
-          pipeline_type: "google",
+          pipeline_type: "gemini-live-2.5-flash-preview",
           personality: "Custom",
           system_prompt: systemPrompt,
           avatar: false

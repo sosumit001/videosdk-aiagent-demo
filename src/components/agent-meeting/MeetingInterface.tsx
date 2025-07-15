@@ -330,6 +330,7 @@ export const MeetingInterface: React.FC<MeetingInterfaceProps> = ({
           pipeline_type: "google",
           personality: "Custom",
           system_prompt: systemPrompt,
+          avatar: false
         }),
       });
 
